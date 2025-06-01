@@ -12,5 +12,6 @@ import { TrackStorage } from './store/track.storage';
       useClass: TrackStorage,
     },
   ],
+  exports: [TrackService],
 })
 export class TrackModule {}

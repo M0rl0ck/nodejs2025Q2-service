@@ -14,7 +14,6 @@ import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ARTIST_NOT_FOUND_ERROR } from './error/artist-not-found.error';
-import { NotFoundError } from 'src/errors/not-found.error';
 
 @Controller('artist')
 export class ArtistController {
@@ -32,14 +31,11 @@ export class ArtistController {
 
   @Get(':id')
   findOne(@Param('id', new ParseUUIDPipe()) id: string) {
-    try {
-      return this.artistService.findOne(id);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw new ARTIST_NOT_FOUND_ERROR();
-      }
-      throw error;
+    const artist = this.artistService.findOne(id);
+    if (!artist) {
+      throw new ARTIST_NOT_FOUND_ERROR();
     }
+    return artist;
   }
 
   @Put(':id')
@@ -47,26 +43,20 @@ export class ArtistController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ) {
-    try {
-      return this.artistService.update(id, updateArtistDto);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw new ARTIST_NOT_FOUND_ERROR();
-      }
-      throw error;
+    const artist = this.artistService.update(id, updateArtistDto);
+    if (!artist) {
+      throw new ARTIST_NOT_FOUND_ERROR();
     }
+    return artist;
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    try {
-      return this.artistService.remove(id);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw new ARTIST_NOT_FOUND_ERROR();
-      }
-      throw error;
+    const result = this.artistService.remove(id);
+    if (!result) {
+      throw new ARTIST_NOT_FOUND_ERROR();
     }
+    return result;
   }
 }

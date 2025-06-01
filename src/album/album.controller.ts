@@ -13,7 +13,6 @@ import {
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { NotFoundError } from 'src/errors/not-found.error';
 import { ALBUM_NOT_FOUND_ERROR } from './errors/album-not-found.error';
 
 @Controller('album')
@@ -32,14 +31,11 @@ export class AlbumController {
 
   @Get(':id')
   findOne(@Param('id', new ParseUUIDPipe()) id: string) {
-    try {
-      return this.albumService.findOne(id);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw new ALBUM_NOT_FOUND_ERROR();
-      }
-      throw error;
+    const album = this.albumService.findOne(id);
+    if (!album) {
+      throw new ALBUM_NOT_FOUND_ERROR();
     }
+    return album;
   }
 
   @Put(':id')
@@ -47,26 +43,20 @@ export class AlbumController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ) {
-    try {
-      return this.albumService.update(id, updateAlbumDto);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw new ALBUM_NOT_FOUND_ERROR();
-      }
-      throw error;
+    const album = this.albumService.update(id, updateAlbumDto);
+    if (!album) {
+      throw new ALBUM_NOT_FOUND_ERROR();
     }
+    return album;
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    try {
-      return this.albumService.remove(id);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw new ALBUM_NOT_FOUND_ERROR();
-      }
-      throw error;
+    const result = this.albumService.remove(id);
+    if (!result) {
+      throw new ALBUM_NOT_FOUND_ERROR();
     }
+    return result;
   }
 }

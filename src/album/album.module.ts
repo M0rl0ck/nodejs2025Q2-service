@@ -12,5 +12,6 @@ import { AlbumStorage } from './store/album.storage';
       useClass: AlbumStorage,
     },
   ],
+  exports: [AlbumService],
 })
 export class AlbumModule {}

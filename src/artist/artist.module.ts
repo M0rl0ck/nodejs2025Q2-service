@@ -12,5 +12,6 @@ import { ArtistStorage } from './store/artist.storage';
       useClass: ArtistStorage,
     },
   ],
+  exports: [ArtistService],
 })
 export class ArtistModule {}
