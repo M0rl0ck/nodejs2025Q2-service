@@ -3,6 +3,7 @@ import { FavStore } from './interfaces/fav-storage.interface';
 import { ArtistService } from 'src/artist/artist.service';
 import { AlbumService } from 'src/album/album.service';
 import { TrackService } from 'src/track/track.service';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class FavService {
@@ -12,6 +13,21 @@ export class FavService {
     private readonly albumService: AlbumService,
     private readonly trackService: TrackService,
   ) {}
+
+  @OnEvent('track.deleted')
+  deleteTrack(trackId: string) {
+    this.deleteTrackFromFav(trackId);
+  }
+
+  @OnEvent('album.deleted')
+  deleteAlbum(albumId: string) {
+    this.deleteAlbumFromFav(albumId);
+  }
+
+  @OnEvent('artist.deleted')
+  deleteArtist(artistId: string) {
+    this.deleteArtistFromFav(artistId);
+  }
 
   findAll() {
     const fav = this.favStorage.getFav();

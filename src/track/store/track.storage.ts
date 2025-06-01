@@ -8,6 +8,23 @@ import { UpdateTrackDto } from '../dto/update-track.dto';
 @Injectable()
 export class TrackStorage implements TrackStore {
   private tracks: Map<string, Track> = new Map();
+
+  deleteAlbum(albumId: string): void {
+    this.tracks.forEach((track) => {
+      if (track.albumId === albumId) {
+        track.albumId = null;
+      }
+    });
+  }
+
+  deleteArtist(artistId: string): void {
+    this.tracks.forEach((track) => {
+      if (track.artistId === artistId) {
+        track.artistId = null;
+      }
+    });
+  }
+
   getAllTracks(): Track[] {
     return Array.from(this.tracks.values());
   }

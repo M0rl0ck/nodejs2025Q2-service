@@ -13,6 +13,15 @@ export class AlbumStorage implements AlbumStore {
     this.albums.set(album.id, album);
     return album;
   }
+
+  deleteArtist(artistId: string): void {
+    this.albums.forEach((album) => {
+      if (album.artistId === artistId) {
+        album.artistId = null;
+      }
+    });
+  }
+
   getAllAlbums(): Album[] {
     return Array.from(this.albums.values());
   }

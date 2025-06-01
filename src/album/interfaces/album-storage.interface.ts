@@ -8,6 +8,7 @@ interface AlbumStore {
   createAlbum(album: CreateAlbumDto): Album;
   updateAlbum(id: string, album: UpdateAlbumDto): Album | undefined;
   deleteAlbum(id: string): boolean;
+  deleteArtist(artistId: string): void;
 }
 
 export { AlbumStore };

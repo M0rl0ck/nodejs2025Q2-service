@@ -8,6 +8,8 @@ interface TrackStore {
   createTrack(track: CreateTrackDto): Track;
   updateTrack(id: string, track: UpdateTrackDto): Track | undefined;
   deleteTrack(id: string): boolean;
+  deleteAlbum(albumId: string): void;
+  deleteArtist(artistId: string): void;
 }
 
 export { TrackStore };

@@ -2,10 +2,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistStore } from './interfaces/artist-storage.interface';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class ArtistService {
-  constructor(@Inject('ArtistStore') private readonly storage: ArtistStore) {}
+  constructor(
+    @Inject('ArtistStore') private readonly storage: ArtistStore,
+    private eventEmitter: EventEmitter2,
+  ) {}
   create(createArtistDto: CreateArtistDto) {
     return this.storage.createArtist(createArtistDto);
   }
@@ -23,6 +27,11 @@ export class ArtistService {
   }
 
   remove(id: string): boolean {
-    return this.storage.deleteArtist(id);
+    const result = this.storage.deleteArtist(id);
+    if (!result) {
+      return false;
+    }
+    this.eventEmitter.emit('artist.deleted', id);
+    return true;
   }
 }
