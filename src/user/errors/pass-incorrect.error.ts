@@ -9,7 +9,7 @@ export class INCORRECT_PASS extends Error {
 
 export class INCORRECT_PASS_EXCEPTION extends HttpException {
   constructor() {
-    super('Incorrect password', HttpStatus.FORBIDDEN);
+    super('oldPassword is wrong', HttpStatus.FORBIDDEN);
     this.name = 'INCORRECT_LOGIN';
   }
 }
