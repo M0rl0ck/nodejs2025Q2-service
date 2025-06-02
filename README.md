@@ -1,23 +1,39 @@
 # Home Library Service
 
+### This repository is the part of [nodejs](https://github.com/AlreadyBored/nodejs-assignments) course
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
-## Downloading
+### Clone this repository:
 
 ```
-git clone {repository URL}
+git clone https://github.com/M0rl0ck/nodejs2025Q2-service.git
 ```
 
-## Installing NPM modules
+### Go to project directory:
 
 ```
-npm install
+$ cd nodejs2025Q2-service
 ```
 
-## Running application
+### Go to branch develop:
+
+```
+$ git checkout develop
+```
+
+### Rename file `.env.example` to `.env`
+
+### Install dependence:
+
+```
+npm ci
+```
+
+### Running application
 
 ```
 npm start
