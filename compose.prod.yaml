@@ -1,0 +1,36 @@
+services:
+  server:
+    # env_file: .env
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: production
+    command: ['node', 'dist/main']
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - NODE_ENV=production
+
+    depends_on:
+      - db
+
+  db:
+    # env_file: .env
+    build:
+      context: ./db
+    restart: always
+    user: postgres
+    volumes:
+      - PG-DATA:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB={DB_NAME}
+      - POSTGRES_HOST={DB_HOST}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_PORT=${DB_PORT}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+
+volumes:
+  ignore:
+  PG-DATA:
