@@ -1,51 +1,56 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import type { AlbumStore } from './interfaces/album-storage.interface';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Album } from './entities/album.entity';
+
+// import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class AlbumService {
   constructor(
-    @Inject('AlbumStore') private readonly storage: AlbumStore,
-    private eventEmitter: EventEmitter2,
+    @InjectRepository(Album)
+    private readonly albumRepository: Repository<Album>,
+    // private eventEmitter: EventEmitter2,
   ) {}
 
-  @OnEvent('artist.deleted')
-  onArtistDeleted(artistId: string) {
-    this.storage.deleteArtist(artistId);
+  // @OnEvent('artist.deleted')
+  // onArtistDeleted(artistId: string) {
+  //   this.storage.deleteArtist(artistId);
+  // }
+
+  async create(createAlbumDto: CreateAlbumDto) {
+    return await this.albumRepository.save(createAlbumDto);
   }
 
-  create(createAlbumDto: CreateAlbumDto) {
-    return this.storage.createAlbum(createAlbumDto);
+  async findAll() {
+    const albums = await this.albumRepository.find();
+    return albums;
   }
 
-  findAll() {
-    return this.storage.getAllAlbums();
-  }
-
-  findOne(id: string) {
-    const album = this.storage.getAlbumById(id);
+  async findOne(id: string) {
+    const album = await this.albumRepository.findOneBy({ id });
     if (!album) {
       return undefined;
     }
     return album;
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    const album = this.storage.updateAlbum(id, updateAlbumDto);
+  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    const album = await this.findOne(id);
     if (!album) {
       return undefined;
     }
-    return album;
+    return await this.albumRepository.update(id, updateAlbumDto);
   }
 
-  remove(id: string) {
-    const result = this.storage.deleteAlbum(id);
+  async remove(id: string) {
+    const result = await this.albumRepository.delete(id);
     if (!result) {
       return false;
     }
-    this.eventEmitter.emit('album.deleted', id);
+    // this.eventEmitter.emit('album.deleted', id);
     return true;
   }
 }
