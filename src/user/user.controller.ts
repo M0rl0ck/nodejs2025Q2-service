@@ -25,18 +25,18 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    return await this.userService.create(createUserDto);
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    return await this.userService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe()) id: string) {
-    const user = this.userService.findOne(id);
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    const user = await this.userService.findOne(id);
     if (!user) {
       throw new USER_NOT_FOUND_ERROR();
     }
@@ -44,12 +44,12 @@ export class UserController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateUserDto: UpdateUserPasswordDto,
   ) {
     try {
-      const user = this.userService.update(id, updateUserDto);
+      const user = await this.userService.update(id, updateUserDto);
       if (!user) {
         throw new USER_NOT_FOUND_ERROR();
       }
@@ -64,9 +64,9 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', new ParseUUIDPipe()) id: string) {
+  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     try {
-      return this.userService.remove(id);
+      return await this.userService.remove(id);
     } catch (error) {
       if (error instanceof NotFoundError) {
         throw new USER_NOT_FOUND_ERROR();

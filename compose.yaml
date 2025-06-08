@@ -1,6 +1,7 @@
 services:
   server:
-    # env_file: .env
+    env_file: .env
+    container_name: dev_sever
     build:
       dockerfile: Dockerfile
       context: .
@@ -16,9 +17,13 @@ services:
 
     depends_on:
       - db
+    networks:
+      - internet
+      - postgres-network
 
   db:
-    # env_file: .env
+    env_file: .env
+    container_name: dev_db
     build:
       context: ./db
     restart: always
@@ -33,7 +38,30 @@ services:
       - POSTGRES_PORT=${DB_PORT}
     ports:
       - ${DB_PORT}:${DB_PORT}
+    networks:
+      - postgres-network
+
+  # pg-admin:
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: dbuset@example.com
+  #     PGADMIN_DEFAULT_USERNAME: ${DB_USER}
+  #     PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD}
+
+  #   ports:
+  #     - '8080:80'
+  #   restart: unless-stopped
+  #   networks:
+  #     - postgres-network
+  #     - internet
 
 volumes:
   ignore:
   PG-DATA:
+
+networks:
+  internet:
+    driver: bridge
+    internal: true
+  postgres-network:
+    driver: bridge
