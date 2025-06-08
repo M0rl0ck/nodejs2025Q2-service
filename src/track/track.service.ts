@@ -1,52 +1,42 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { TrackStore } from './interfaces/track-storage.interface';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Track } from './entities/track.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TrackService {
   constructor(
-    @Inject('TrackStore') private readonly storage: TrackStore,
-    private eventEmitter: EventEmitter2,
+    @InjectRepository(Track)
+    private readonly trackRepository: Repository<Track>,
   ) {}
 
-  @OnEvent('artist.deleted')
-  onArtistDeleted(artistId: string) {
-    this.storage.deleteArtist(artistId);
+  async create(createTrackDto: CreateTrackDto) {
+    return await this.trackRepository.save(createTrackDto);
   }
 
-  @OnEvent('album.deleted')
-  onAlbumDeleted(albumId: string) {
-    this.storage.deleteAlbum(albumId);
+  async findAll() {
+    return await this.trackRepository.find();
   }
 
-  create(createTrackDto: CreateTrackDto) {
-    return this.storage.createTrack(createTrackDto);
+  async findOne(id: string) {
+    return await this.trackRepository.findOneBy({ id });
   }
 
-  findAll() {
-    return this.storage.getAllTracks();
-  }
-
-  findOne(id: string) {
-    return this.storage.getTrackById(id);
-  }
-
-  update(id: string, updateTrackDto: UpdateTrackDto) {
-    const track = this.storage.getTrackById(id);
+  async update(id: string, updateTrackDto: UpdateTrackDto) {
+    const track = await this.findOne(id);
     if (!track) {
       return undefined;
     }
-    return this.storage.updateTrack(id, updateTrackDto);
+    return await this.trackRepository.update(id, updateTrackDto);
   }
 
-  remove(id: string): boolean {
-    const result = this.storage.deleteTrack(id);
-    if (!result) {
+  async remove(id: string): Promise<boolean> {
+    const result = await this.trackRepository.delete(id);
+    if (!result.affected) {
       return false;
     }
-    this.eventEmitter.emit('track.deleted', id);
     return true;
   }
 }

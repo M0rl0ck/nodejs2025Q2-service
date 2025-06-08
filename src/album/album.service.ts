@@ -12,13 +12,7 @@ export class AlbumService {
   constructor(
     @InjectRepository(Album)
     private readonly albumRepository: Repository<Album>,
-    // private eventEmitter: EventEmitter2,
   ) {}
-
-  // @OnEvent('artist.deleted')
-  // onArtistDeleted(artistId: string) {
-  //   this.storage.deleteArtist(artistId);
-  // }
 
   async create(createAlbumDto: CreateAlbumDto) {
     return await this.albumRepository.save(createAlbumDto);
@@ -47,10 +41,9 @@ export class AlbumService {
 
   async remove(id: string) {
     const result = await this.albumRepository.delete(id);
-    if (!result) {
+    if (!result.affected) {
       return false;
     }
-    // this.eventEmitter.emit('album.deleted', id);
     return true;
   }
 }
