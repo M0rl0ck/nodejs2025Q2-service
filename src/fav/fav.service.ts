@@ -1,101 +1,98 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { FavStore } from './interfaces/fav-storage.interface';
-import { ArtistService } from 'src/artist/artist.service';
-import { AlbumService } from 'src/album/album.service';
-import { TrackService } from 'src/track/track.service';
-import { OnEvent } from '@nestjs/event-emitter';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { FavAlbum } from './entities/fav.album.entity';
+import { FavArtist } from './entities/fav.artist.entity';
+import { FavTrack } from './entities/fav.track.entity';
 
 @Injectable()
 export class FavService {
   constructor(
-    @Inject('FavStore') private readonly favStorage: FavStore,
-    private readonly artistService: ArtistService,
-    private readonly albumService: AlbumService,
-    private readonly trackService: TrackService,
+    @InjectRepository(FavAlbum)
+    private readonly favAlbumRepository: Repository<FavAlbum>,
+    @InjectRepository(FavTrack)
+    private readonly favTrackRepository: Repository<FavTrack>,
+    @InjectRepository(FavArtist)
+    private readonly favArtistRepository: Repository<FavArtist>,
   ) {}
 
-  @OnEvent('track.deleted')
-  deleteTrack(trackId: string) {
-    this.deleteTrackFromFav(trackId);
-  }
-
-  @OnEvent('album.deleted')
-  deleteAlbum(albumId: string) {
-    this.deleteAlbumFromFav(albumId);
-  }
-
-  @OnEvent('artist.deleted')
-  deleteArtist(artistId: string) {
-    this.deleteArtistFromFav(artistId);
-  }
-
-  findAll() {
-    const fav = this.favStorage.getFav();
-
-    const artists = fav.artists
-      .map((artistId) => {
-        try {
-          return this.artistService.findOne(artistId);
-        } catch (error) {
-          return null;
-        }
-      })
-      .filter(Boolean);
-
-    const albums = fav.albums
-      .map((albumId) => {
-        try {
-          return this.albumService.findOne(albumId);
-        } catch (error) {
-          return null;
-        }
-      })
-      .filter(Boolean);
-
-    const tracks = fav.tracks
-      .map((trackId) => {
-        try {
-          return this.trackService.findOne(trackId);
-        } catch (error) {
-          return null;
-        }
-      })
-      .filter(Boolean);
+  async findAll() {
+    const promiseArtists = this.favArtistRepository.find();
+    const promiseAlbums = this.favAlbumRepository.find();
+    const promiseTracks = this.favTrackRepository.find();
+    const [favArtists, favAlbums, favTracks] = await Promise.all([
+      promiseArtists,
+      promiseAlbums,
+      promiseTracks,
+    ]);
+    const artists = favArtists.map((artist) => artist.artist);
+    const albums = favAlbums.map((album) => album.album);
+    const tracks = favTracks.map((track) => track.track);
     return { artists, albums, tracks };
   }
 
-  addTrackToFav(trackId: string): boolean {
-    const track = this.trackService.findOne(trackId);
-    if (!track) {
+  async addTrackToFav(trackId: string): Promise<boolean> {
+    try {
+      await this.favTrackRepository.save({ trackId });
+      return true;
+    } catch (error) {
       return false;
     }
-    this.favStorage.addTrackToFav(trackId);
-    return true;
   }
 
-  addAlbumToFav(albumId: string): boolean {
-    const album = this.albumService.findOne(albumId);
-    if (!album) {
+  async addAlbumToFav(albumId: string): Promise<boolean> {
+    try {
+      await this.favAlbumRepository.save({ albumId });
+      return true;
+    } catch (error) {
       return false;
     }
-    this.favStorage.addAlbumToFav(albumId);
-    return true;
   }
-  addArtistToFav(artistId: string): boolean {
-    const artist = this.artistService.findOne(artistId);
-    if (!artist) {
+  async addArtistToFav(artistId: string): Promise<boolean> {
+    try {
+      await this.favArtistRepository.save({ artistId });
+      return true;
+    } catch (error) {
       return false;
     }
-    this.favStorage.addArtistToFav(artistId);
+  }
+  async deleteTrackFromFav(trackId: string): Promise<boolean> {
+    const favTrack = await this.favTrackRepository.findOne({
+      where: { trackId },
+    });
+    if (!favTrack) {
+      return false;
+    }
+    const result = await this.favTrackRepository.delete(favTrack.id);
+    if (!result.affected) {
+      return false;
+    }
     return true;
   }
-  deleteTrackFromFav(trackId: string): boolean {
-    return this.favStorage.deleteTrackFromFav(trackId);
+  async deleteAlbumFromFav(albumId: string): Promise<boolean> {
+    const favAlbum = await this.favAlbumRepository.findOne({
+      where: { albumId },
+    });
+    if (!favAlbum) {
+      return false;
+    }
+    const result = await this.favAlbumRepository.delete(favAlbum.id);
+    if (!result.affected) {
+      return false;
+    }
+    return true;
   }
-  deleteAlbumFromFav(albumId: string): boolean {
-    return this.favStorage.deleteAlbumFromFav(albumId);
-  }
-  deleteArtistFromFav(artistId: string): boolean {
-    return this.favStorage.deleteArtistFromFav(artistId);
+  async deleteArtistFromFav(artistId: string): Promise<boolean> {
+    const favArtist = await this.favArtistRepository.findOne({
+      where: { artistId },
+    });
+    if (!favArtist) {
+      return false;
+    }
+    const result = await this.favArtistRepository.delete(favArtist.id);
+    if (!result.affected) {
+      return false;
+    }
+    return true;
   }
 }

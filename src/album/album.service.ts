@@ -5,8 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Album } from './entities/album.entity';
 
-// import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-
 @Injectable()
 export class AlbumService {
   constructor(

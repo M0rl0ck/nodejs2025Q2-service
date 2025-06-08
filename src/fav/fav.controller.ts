@@ -17,13 +17,13 @@ export class FavController {
   constructor(private readonly favService: FavService) {}
 
   @Get()
-  findAll() {
-    return this.favService.findAll();
+  async findAll() {
+    return await this.favService.findAll();
   }
 
   @Post('track/:id')
-  addTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    const res = this.favService.addTrackToFav(id);
+  async addTrack(@Param('id', new ParseUUIDPipe()) id: string) {
+    const res = await this.favService.addTrackToFav(id);
     if (!res) {
       throw new UNPROCESSABLE_ENTITY_ERROR('Track');
     }
@@ -33,8 +33,8 @@ export class FavController {
   }
 
   @Post('album/:id')
-  addAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    const res = this.favService.addAlbumToFav(id);
+  async addAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+    const res = await this.favService.addAlbumToFav(id);
     if (!res) {
       throw new UNPROCESSABLE_ENTITY_ERROR('Album');
     }
@@ -44,8 +44,8 @@ export class FavController {
   }
 
   @Post('artist/:id')
-  addArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    const res = this.favService.addArtistToFav(id);
+  async addArtist(@Param('id', new ParseUUIDPipe()) id: string) {
+    const res = await this.favService.addArtistToFav(id);
     if (!res) {
       throw new UNPROCESSABLE_ENTITY_ERROR('Artist');
     }
@@ -56,8 +56,8 @@ export class FavController {
 
   @Delete('track/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    const res = this.favService.deleteTrackFromFav(id);
+  async removeTrack(@Param('id', new ParseUUIDPipe()) id: string) {
+    const res = await this.favService.deleteTrackFromFav(id);
     if (!res) {
       throw new NotFoundException('Track');
     }
@@ -66,8 +66,8 @@ export class FavController {
 
   @Delete('album/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    const res = this.favService.deleteAlbumFromFav(id);
+  async removeAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+    const res = await this.favService.deleteAlbumFromFav(id);
     if (!res) {
       throw new NotFoundException('Album');
     }
@@ -76,8 +76,8 @@ export class FavController {
 
   @Delete('artist/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    const res = this.favService.deleteArtistFromFav(id);
+  async removeArtist(@Param('id', new ParseUUIDPipe()) id: string) {
+    const res = await this.favService.deleteArtistFromFav(id);
     if (!res) {
       throw new NotFoundException('Artist');
     }

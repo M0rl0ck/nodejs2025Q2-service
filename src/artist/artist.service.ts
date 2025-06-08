@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-// import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Artist } from './entities/artist.entity';
 import { Repository } from 'typeorm';
@@ -37,7 +36,6 @@ export class ArtistService {
     if (!result.affected) {
       return false;
     }
-    // this.eventEmitter.emit('artist.deleted', id);
     return true;
   }
 }
