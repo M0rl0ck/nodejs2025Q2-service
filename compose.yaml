@@ -1,0 +1,52 @@
+services:
+  server:
+    env_file: .env
+    container_name: dev_sever
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    image: m0rl0ck/nodejs2025q2-dev-server
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start:dev
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - NODE_ENV=development
+
+    depends_on:
+      - db
+    networks:
+      - internet
+      - postgres-network
+
+  db:
+    env_file: .env
+    container_name: dev_db
+    build:
+      context: ./db
+    image: m0rl0ck/nodejs2025q2-db
+    restart: always
+    user: postgres
+    volumes:
+      - PG-DATA:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB={DB_NAME}
+      - POSTGRES_HOST={DB_HOST}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_PORT=${DB_PORT}
+    networks:
+      - postgres-network
+
+volumes:
+  PG-DATA:
+
+networks:
+  internet:
+    driver: bridge
+    internal: true
+  postgres-network:
+    driver: bridge
