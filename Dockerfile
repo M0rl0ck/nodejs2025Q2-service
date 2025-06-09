@@ -8,9 +8,12 @@ COPY package*.json ./
 
 RUN npm ci
 
+RUN npm cache clean --force
+
 COPY tsconfig*.json ./
 
-COPY . .
+COPY src ./src
+COPY doc ./doc
 
 RUN npm run build
 
@@ -25,6 +28,8 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm ci --omit=dev
+
+COPY doc ./doc
 
 EXPOSE 4000
 

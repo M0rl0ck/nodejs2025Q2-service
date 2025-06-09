@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
       context: .
       target: development
+    image: m0rl0ck/nodejs2025q2-dev-server
     volumes:
       - .:/app
       - /app/node_modules
@@ -26,6 +27,7 @@ services:
     container_name: dev_db
     build:
       context: ./db
+    image: m0rl0ck/nodejs2025q2-db
     restart: always
     user: postgres
     volumes:
@@ -36,27 +38,10 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_PORT=${DB_PORT}
-    ports:
-      - ${DB_PORT}:${DB_PORT}
     networks:
       - postgres-network
 
-  # pg-admin:
-  #   image: dpage/pgadmin4
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: dbuset@example.com
-  #     PGADMIN_DEFAULT_USERNAME: ${DB_USER}
-  #     PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD}
-
-  #   ports:
-  #     - '8080:80'
-  #   restart: unless-stopped
-  #   networks:
-  #     - postgres-network
-  #     - internet
-
 volumes:
-  ignore:
   PG-DATA:
 
 networks:
