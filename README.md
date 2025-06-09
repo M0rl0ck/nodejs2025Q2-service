@@ -22,7 +22,7 @@ $ cd nodejs2025Q2-service
 ### Go to branch develop:
 
 ```
-$ git checkout develop
+$ git checkout dev-docker-postgres
 ```
 
 ### Rename file `.env.example` to `.env`
@@ -35,13 +35,60 @@ npm ci
 
 ### Running application
 
+- #### To run the application in dev mode:
+
 ```
-npm start
+npm run start:docker-dev
 ```
+
+This command pulls images from docker-hub (if they don't exist locally) and runs the application.
+If you don't want to pull the images, you can create them instead:
+
+```
+npm run build:docker-dev
+```
+
+To build images.
+And then:
+
+```
+npm run start:docker-dev
+```
+
+To start application.
+
+- #### To run the application in prod mode:
+
+```
+npm run start:docker-prod
+```
+
+To pull and start application
+or:
+
+```
+npm run build:docker-prod
+```
+
+and then
+
+```
+npm run start:docker-prod
+```
+
+to build and start application
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+
+### Checking image vulnerabilities
+
+```
+npm run vulnerabilities-scanning
+```
+
+This script checks the latest created image for vulnerabilities.
+If the images have not been built yet, you will need to create the image in advance.
 
 ## Testing
 

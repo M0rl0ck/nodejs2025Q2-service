@@ -11,7 +11,9 @@
   "scripts": {
     "start:docker-prod": "docker compose -f compose.prod.yaml up",
     "start:docker-dev": "docker compose up",
+    "build:docker-prod": "docker compose -f compose.prod.yaml build",
     "build:docker-dev": "docker compose build",
+    "vulnerabilities-scanning": "docker scout cves",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
